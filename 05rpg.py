@@ -13,28 +13,28 @@ time.sleep(1)
 
 os.system("cls")
 
-# 인트로 및 설명글
-time.sleep(1)
-print("========================게임 설명==========================")
-print(f"반갑습니다, [{name}]님.\n")
-time.sleep(1)
-print("05RPG에 오신 것을 환영합니다.\n")
-time.sleep(1)
-print("05RPG는 5와 인연이 깊은 게임입니다.\n")
-time.sleep(1)
-print(f"이제부터 [{name}]님은")
-time.sleep(1)
-print("\t5가지의 능력치와")
-time.sleep(1)
-print("\t5가지의 동작")
-time.sleep(1)
-print("\t5가지의 몬스터를 만날것입니다.\n")
-time.sleep(1)
-print("그리고 매 전투, 5초 내의 선택을 강요받으실 겁니다.\n")
-time.sleep(1)
-print("■~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~■\n")
-print("5초 룰을 극복하고 '최단시간 플레이'로 몬스터를 무찔러 주세요!\n")
-print("■~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~■\n")
+# # 인트로 및 설명글
+# time.sleep(1)
+# print("========================게임 설명==========================")
+# print(f"반갑습니다, [{name}]님.\n")
+# time.sleep(1)
+# print("05RPG에 오신 것을 환영합니다.\n")
+# time.sleep(1)
+# print("05RPG는 5와 인연이 깊은 게임입니다.\n")
+# time.sleep(1)
+# print(f"이제부터 [{name}]님은")
+# time.sleep(1)
+# print("\t5가지의 능력치와")
+# time.sleep(1)
+# print("\t5가지의 동작")
+# time.sleep(1)
+# print("\t5가지의 몬스터를 만날것입니다.\n")
+# time.sleep(1)
+# print("그리고 매 전투, 5초 내의 선택을 강요받으실 겁니다.\n")
+# time.sleep(1)
+# print("■~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~■\n")
+# print("5초 룰을 극복하고 '최단시간 플레이'로 몬스터를 무찔러 주세요!\n")
+# print("■~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~■\n")
 
 while True:
     print(f"계속 하려면 Y키를 입력하세요.")
@@ -95,7 +95,7 @@ monster = [
 ]
 
 
-# 게임종료 함수
+# 게임종료 함수에 사용되는 변수
 play = True
 
 
@@ -103,14 +103,14 @@ def gameover():
     print("\n용사가 우유부단해서는 안됩니다!\n결단력을 길러오세요..!\n")
     global play
     play = False
-    return True
 
 
 # 랜덤으로 몬스터를 생성한다
 random_monster = random.choice(monster)
 # 배틀함수
-def battle():
-    while True:
+def status(func):
+    def wrapper():
+        os.system("cls")
         print("\n■~~~~~~~~~~~~~~~~~~~~~~~전투모드~~~~~~~~~~~~~~~~~~~~~~~~~~~~■\n")
         # 플레이어의 정보를 보여준다
         player.show_status()
@@ -123,76 +123,96 @@ def battle():
         # 5가지 동작 선택
         print("\n 1.기본공격 2.공격스킬 3. 회복스킬 4.방어스킬 5.카운터")
         print("\n==============================================================")
+        func()
 
-        # 전투 시 입력이 5초 내로 없으면 게임종료
-        t = Timer(5, gameover)
-        t.start()
-        prompt = "\n 5초 안에 동작을 결정하세요..!\n"
-        print(prompt)
+    return wrapper
 
-        # 동작을 입력받는다
+
+@status
+def status():
+    return
+
+
+def battle():
+    status()
+    # 전투 시 입력이 5초 내로 없으면 게임종료
+    t = Timer(5, gameover)
+    t.start()
+    prompt = "\n 5초 안에 동작을 결정하세요..!\n"
+    print(prompt)
+
+    # 동작을 입력받는다
+    while True:
         action = msvcrt.getch()
         time.sleep(0.1)
-
         if action == b"1":
+            os.system("cls")
+            status()
             t.cancel()
             player.attack(random_monster)
             random_monster.attack(player)
+            break
         elif action == b"2":
+            os.system("cls")
+            status()
             t.cancel()
             player.special_attack(random_monster)
             random_monster.attack(player)
+            break
         elif action == b"3":
+            os.system("cls")
+            status()
             t.cancel()
             player.heal(random_monster)
             random_monster.attack(player)
+            break
         elif action == b"4":
+            os.system("cls")
+            status()
             t.cancel()
             player.defend(random_monster)
             random_monster.attack(player)
+            break
         elif action == b"5":
+            os.system("cls")
+            status()
             t.cancel()
             player.counter(random_monster)
             random_monster.attack(player)
+            break
         else:
             print("정신차리세요! 용사님!")
             continue
 
-        if player.hp <= 0:
-            print(f"{player.name}님은 한줌의 먼지가 되었습니다.")
-            break
-        elif random_monster.hp <= 0:
-            player.ex += 1
-            print(f"{random_monster.name}이(가) 쓰러졌습니다.")
-            break
-        elif not play:
-            print("왜 못해?")
-            return True
-        else:
-            pass
-
-        os.system("cls")
+    if player.hp <= 0:
+        print(f"\n{player.name}님은 한줌의 먼지가 되었습니다.")
+    elif random_monster.hp <= 0:
+        player.ex += 1
+        print(f"\n{random_monster.name}이(가) 쓰러졌습니다.")
 
 
 start_time = time.time()  # 시작시간 저장
 
 # 전투시작
 while player.ex < 5:
-
-    # os.system("cls")
-
-    if battle():
+    battle()
+    if not play:
         break
-
 
 # 전투종료
 
 end_time = time.time()  # 종료시간 저장
 
-# 다시시작
 
+# 게임결과
+if player.ex == 5:
+    print(f"\n{player.name}님 축하합니다! 모든 몬스터를 잡았습니다!")
+else:
+    print(f"\n{player.name}님 결단력과 실력을 길러오세요!")
 
 # 플레이가 종료된 시간 - 코드가 시작된 시간으로 실행 시간 구하기 (단위 : 초)
 playtime = f"{end_time-start_time:.3f} 초"
 
 print(f"\n[{name}]님은 [{playtime}]동안 전투를 하셨습니다.\n")
+
+# 다시시작(미구현)
