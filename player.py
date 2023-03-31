@@ -83,11 +83,11 @@ class Character:
         damage = random.randint(self.luck * 2, self.luck * 99)
         # 입력받기
         ans = str(input())
-        if ans == other.name:
+        if ans == other.name.upper() or ans == other.name.lower():
             t.cancel()
             other.hp = max(other.hp - damage, 0)
             print(f"\n{other.name}이(가) {damage}만큼의 카운터데미지를 입었습니다. HP: {other.hp}")
-        elif ans != other.name and countertime:
+        elif ans != other.name.upper() and ans != other.name.lower() and countertime:
             t.cancel()
             self.hp = max(self.hp - damage, 0)
             print(f"\n{self.name}님이 카운터 실패로 {damage}만큼의 역관광를 입었습니다.")
@@ -97,3 +97,14 @@ class Character:
         print(
             f"{self.name}의 상태: HP {self.hp}/{self.max_hp} | MP {self.mp}/{self.max_mp} | EX {self.ex}/5"
         )
+
+    #################공격선택######################
+    def action_choice(self, other, choice):
+        action = [
+            self.attack,
+            self.special_attack,
+            self.heal,
+            self.defend,
+            self.counter,
+        ]
+        return action[int(choice) - 1](other)
