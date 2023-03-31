@@ -1,5 +1,4 @@
-import random, time, os
-from threading import Timer
+import random, time
 
 
 # 몬스터의 기본정보

@@ -2,6 +2,7 @@ from monster import *
 from player import *
 import random, time, os, msvcrt
 from threading import Timer
+from rich import *
 
 os.system("cls")
 # 용사이름 받기
@@ -86,6 +87,7 @@ while True:
 
 time.sleep(1)
 
+# 몬스터 리스트
 monster = [
     Monster("HTML", 100, 10),
     Monster("CSS", 200, 20),
@@ -99,9 +101,9 @@ monster = [
 play = True
 time_ = 5
 
-
+# 게임오버 함수가 사용될 경우, 게임오버 판별용 변수 play가 False가 된다.
 def gameover():
-    print("\n용사가 우유부단해서는 안됩니다!\n결단력을 길러오세요..!\n")
+    print("\nTime over!\n결단력을 길러오세요..!\n")
     global play
     play = False
 
@@ -138,62 +140,62 @@ def status():
 
 def battle():
     status()
-    # 전투 시 입력이 5초 내로 없으면 게임종료
-    timelimit = Timer(time_, gameover)
-    timelimit.start()
-    if play:
-        # 플레이어와 몬스터가 모두 살아있다면 계속 전투
-        while player.hp > 0 and random_monster.hp > 0:
-            if not play:
-                break
-            # 동작을 입력받는다
-            action = msvcrt.getch()
-            time.sleep(0.1)
-            if action == b"1":
-                os.system("cls")
-                status()
-                timelimit.cancel()
-                player.attack(random_monster)
-                random_monster.attack(player)
-                continue
-            elif action == b"2":
-                os.system("cls")
-                status()
-                timelimit.cancel()
-                player.special_attack(random_monster)
-                random_monster.attack(player)
-                continue
-            elif action == b"3":
-                os.system("cls")
-                status()
-                timelimit.cancel()
-                player.heal(random_monster)
-                random_monster.attack(player)
-                continue
-            elif action == b"4":
-                os.system("cls")
-                status()
-                timelimit.cancel()
-                player.defend(random_monster)
-                random_monster.attack(player)
-                continue
-            elif action == b"5":
-                os.system("cls")
-                status()
-                timelimit.cancel()
-                player.counter(random_monster)
-                random_monster.attack(player)
-                continue
-            else:
-                print("\n정신차리세요! 용사님!")
-                continue
+    # 플레이어와 몬스터가 모두 살아있다면 계속 전투, 타임오버가 아니라면 계속 전투
+    while player.hp > 0 and random_monster.hp > 0 and play:
+        # 전투 시 입력이 5초 내로 없으면 게임종료
+        timelimit = Timer(time_, gameover)  # while 문 내에서 정의하면 timer사용가능!
+        timelimit.start()
+        # 동작을 입력받는다
+        action = msvcrt.getch()
+        # 타임오버라면 반복문 빠져나가기
+        if not play:
+            break
+        time.sleep(0.1)  # 연속입력 방지
+        if action == b"1":
+            os.system("cls")
+            status()
+            timelimit.cancel()
+            player.attack(random_monster)
+            random_monster.attack(player)
+            continue
+        elif action == b"2":
+            os.system("cls")
+            status()
+            timelimit.cancel()
+            player.special_attack(random_monster)
+            random_monster.attack(player)
+            continue
+        elif action == b"3":
+            os.system("cls")
+            status()
+            timelimit.cancel()
+            player.heal(random_monster)
+            random_monster.attack(player)
+            continue
+        elif action == b"4":
+            os.system("cls")
+            status()
+            timelimit.cancel()
+            player.defend(random_monster)
+            random_monster.attack(player)
+            continue
+        elif action == b"5":
+            os.system("cls")
+            status()
+            timelimit.cancel()
+            player.counter(random_monster)
+            random_monster.attack(player)
+            continue
+        else:
+            print("\n정신차리세요! 용사님!")
+            continue
 
-        if player.hp <= 0:
-            print(f"\n{player.name}님은 한줌의 먼지가 되었습니다.")
-        # 몬스터가 죽었다면 경험치를1 올린다.
-        elif random_monster.hp <= 0:
-            player.ex += 1
-            print(f"\n{random_monster.name}이(가) 쓰러졌습니다.")
+    if player.hp <= 0:
+        print(f"\n{player.name}님은 한줌의 먼지가 되었습니다.")
+    # 몬스터가 죽었다면 경험치를1 올린다.
+    elif random_monster.hp <= 0:
+        player.ex += 1
+        print(f"\n{random_monster.name}이(가) 쓰러졌습니다.")
 
 
 start_time = time.time()  # 전투 시작시간 저장

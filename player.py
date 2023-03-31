@@ -1,6 +1,6 @@
-import random, time, os
+import random
 from threading import Timer
-import msvcrt
+
 
 # 캐릭터 기본정보
 class Character:
@@ -46,7 +46,7 @@ class Character:
             return
 
         heal = self.max_hp * 0.1 * self.love
-        self.hp += heal
+        self.hp = min(self.hp + heal, self.max_hp)  # 최대체력을 넘지않게 회복
         self.mp -= 10
 
         print(
